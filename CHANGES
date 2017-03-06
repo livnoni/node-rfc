@@ -1,5 +1,9 @@
 Change log
 ==========
+0.1.12
+------
+- Unit test for concurrent clients
+- binding.gyp formating
 
 0.1.11 (2017-01-13)
 -------------------

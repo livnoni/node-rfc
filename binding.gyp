@@ -1,16 +1,15 @@
 {
   "variables": {
-	"linux_nwrfcsdk_path": "$(SAPNWRFC_HOME)",
+    "linux_nwrfcsdk_path": "$(SAPNWRFC_HOME)",
     "msvs_nwrfcsdk_path": "<!(echo %SAPNWRFC_HOME%)",
-    #"target_name": 'rfc-<!(node -v)'
     "target_name": 'rfc',
-	"build_dir": '<(PRODUCT_DIR)',
-	"conditions": [
-		[ 'OS=="win"', {
-				"build_dir": "<(PRODUCT_DIR)/../win32_x64"
-			}
-		]
-	]
+    "build_dir": '<(PRODUCT_DIR)',
+    "conditions": [
+        [ 'OS=="win"', {
+                "build_dir": "<(PRODUCT_DIR)/../win32_x64"
+            }
+        ]
+    ]
   },
 
   "targets": [
@@ -43,8 +42,8 @@
                     "libraries": ["-L<(linux_nwrfcsdk_path)/lib", "-lsapnwrfc", "-lsapucum"]
                 },
                 "include_dirs": [
-					"<(linux_nwrfcsdk_path)/include/",
-					"<!(node -e \"require('nan')\")"
+                    "<(linux_nwrfcsdk_path)/include/",
+                    "<!(node -e \"require('nan')\")"
                 ],
                 'product_dir' : 'linux_x64'
             }],
@@ -68,7 +67,7 @@
                 ],
                 'include_dirs': [
                     '<(msvs_nwrfcsdk_path)/include',
-					"<!(node -e \"require('nan')\")"
+                    "<!(node -e \"require('nan')\")"
                 ],
                 'msvs_configuration_attributes': {
                     'OutputDirectory': '$(SolutionDir)$(ConfigurationName)',
@@ -83,10 +82,10 @@
                 #'libraries': [ '-lsapnwrfc.lib', '-llibsapucum.lib' ],
             }]
 
-      ] # conditions	
+      ] # conditions    
     },
-		{
-			"target_name": "action_after_build",
+    {
+      "target_name": "action_after_build",
       "type": "none",
       "dependencies": [ "<(module_name)" ],
       "copies": [
@@ -95,6 +94,6 @@
           "destination": "<(module_path)"
         }
       ]
-		}
+    }
   ]
 }

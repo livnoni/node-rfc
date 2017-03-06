@@ -17,13 +17,15 @@
 var should = require("should");
 var binary = require('node-pre-gyp');
 var path = require('path');
-var rfc_path = binary.find(path.resolve(path.join(__dirname,'../package.json')));
-var rfc = require(rfc_path);
+//var rfc_path = binary.find(path.resolve(path.join(__dirname,'../package.json')));
+//var rfc = require(rfc_path);
+var rfc = require('../build/rfc/rfc.node');
+var Promise = require('bluebird');
 
 var connParams = {
-  user: 'DEMO    ',
+  user: 'demo',
   passwd: 'welcome',
-  ashost: '10.68.104.164',
+  ashost: 'coevi51',
   sysnr: '00',
   client: '620',
 //  trace: '3',
@@ -43,12 +45,13 @@ describe("Connection", function() {
 
   it('connectionInfo() should return connection information', function() {
     var info = client.connectionInfo();
+    info.user = info.user.trimRight();
     info.should.have.properties('dest', 'host', 'partnerHost', 'sysNumber', 'sysId',
       'client', 'user', 'language', 'trace', 'isoLanguage', 'codepage', 'partnerCodepage',
       'rfcRole', 'type', 'partnerType', 'rel', 'partnerRel', 'kernelRel', 'cpicConvId',
       'progName', 'partnerBytesPerChar', 'reserved');
     info.should.have.properties({
-      user: connParams.user,
+      user: connParams.user.toUpperCase(),
       sysNumber: connParams.sysnr,
       client: connParams.client
     });
@@ -76,6 +79,46 @@ describe("Connection", function() {
 						done();
         });
     }
+  });
+
+  it('STFC_CONNECTION should work in parallel, also with multiple clients', function(done) {
+    this.timeout(10000);
+    var CONNECTIONS = 10;
+    var CALLS_PER_CONNECTION = 100;
+    var promises = [];
+    var connections = [];
+ 
+    function openConnections() {
+      for (var i = 0; i < CONNECTIONS; i++) {
+        promises.push(new Promise(function (resolve, reject) {
+          var client = new rfc.Client(connParams);
+          client.connect(function() { 
+            connections.push(client);
+            resolve();
+          });
+        }) );
+      }
+      return Promise.all(promises);
+    }
+
+    openConnections().then(() => {
+      var counter = CONNECTIONS * CALLS_PER_CONNECTION;
+      for (var i = 0; i < CONNECTIONS; i++) {
+        for (var j = 0; j < CALLS_PER_CONNECTION; j ++) {
+          connections[i].invoke('STFC_CONNECTION', { REQUTEXT: 'Hello SAP! ' + i },
+            function(err, res) {
+              should.not.exist(err);
+              should.exist(res);
+              res.should.be.an.Object;
+              res.should.have.property('ECHOTEXT');
+              res.ECHOTEXT.should.startWith('Hello SAP!');
+              if (--counter === 0)
+                done();
+            });
+        }
+      }
+    });
+
   });
 
 	it('STFC_CONNECTION should run sequentially', function(done) {
