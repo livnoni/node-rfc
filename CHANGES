@@ -4,6 +4,7 @@ Change log
 ------
 - Unit test for concurrent clients
 - binding.gyp formating
+- suse 11.4 builds for 4.6 and 6.10
 
 0.1.11 (2017-01-13)
 -------------------
