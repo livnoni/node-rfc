@@ -204,7 +204,6 @@ void Client::InvokeAsync(uv_work_t* req) {
     InvokeBaton* baton = static_cast<InvokeBaton*>(req->data);
 
     RfcInvoke(baton->wrapper->connectionHandle, baton->functionHandle, &baton->errorInfo);
-    baton->wrapper->UnlockMutex();
 }
 
 void Client::InvokeAsyncAfter(uv_work_t* req) {
@@ -281,7 +280,6 @@ NAN_METHOD(Client::Invoke) {
     Handle<Value> argv[2] = { Nan::Null(), Nan::Null() };
     SAP_UC *funcName = fillString(info[0]);
 
-    baton->wrapper->LockMutex();
     baton->functionDescHandle = RfcGetFunctionDesc(wrapper->connectionHandle, funcName, &baton->errorInfo);
     free(funcName);
     if (baton->functionDescHandle == NULL) {

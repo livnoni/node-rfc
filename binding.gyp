@@ -84,17 +84,6 @@
             }]
 
       ] # conditions	
-    },
-		{
-			"target_name": "action_after_build",
-      "type": "none",
-      "dependencies": [ "<(module_name)" ],
-      "copies": [
-        {
-          "files": [ "<(build_dir)/<(module_name).node" ],
-          "destination": "<(module_path)"
-        }
-      ]
-		}
+    }
   ]
 }

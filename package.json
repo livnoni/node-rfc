@@ -18,9 +18,7 @@
 		"github": "0.2.4"
   },
   "scripts": {
-    "test": "mocha",
-    "preinstall": "npm install node-pre-gyp",
-    "install": "node-pre-gyp install --fallback-to-build"
+    "test": "mocha"
   },
   "binary": {
 		"module_name": "rfc",
