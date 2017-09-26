@@ -1,9 +1,10 @@
 "use strict";
+const crypto = require("crypto");
+var rfc = require(`./build/${process.platform}_${process.arch}/rfc`);
 
-var rfc = require("./build/Release/rfc");
-
-module.exports.Client = class Client {
+class Client {
   constructor(props) {
+    this.id = crypto.randomBytes(5).toString("hex");
     this.props = props;
     this.client = new rfc.Client(props);
     this.queue = [];
@@ -58,11 +59,11 @@ module.exports.Client = class Client {
     return this.client.ping.apply(this.client, arguments);
   }
 };
-
+module.exports.Client = Client;
 module.exports.ClientPool = class ClientPool {
-  constructor(props, i) {
+  constructor(props, size) {
     this.props = props;
-    this.size = i || 4;
+    this.size = size || 4;
     this.clients = [];
     this._nextClient = 0;
   }
