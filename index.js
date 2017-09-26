@@ -60,12 +60,15 @@ class Client {
   }
 };
 module.exports.Client = Client;
+
 module.exports.ClientPool = class ClientPool {
   constructor(props, size) {
     this.props = props;
     this.size = size || 4;
     this.clients = [];
+    this.available = [];
     this._nextClient = 0;
+    this.invocations = [];
   }
 
   connect(cb) {
@@ -81,6 +84,7 @@ module.exports.ClientPool = class ClientPool {
           cb = undefined;
         }
         this.clients.push(client);
+        this.available.push(client);
         if (this.clients.length === this.size) {
           cb && cb(null);
         }
@@ -99,5 +103,27 @@ module.exports.ClientPool = class ClientPool {
     let client = this.clients[this._nextClient];
     this._nextClient = (this._nextClient + 1) % this.size;
     return client;
+  }
+
+  invoke(methos, params, cb) {
+    this.invocations.push({method: metnod, params: params, cb: cb});
+    this._invokeNext();
+  }
+
+  _invokeNext() {
+    let data = this.invocations.shift();
+    if (!data) {
+      return;
+    }
+    let client = this.available.shift();
+    if (!client) {
+      this.invocations.unshift(data);
+      return;
+    }
+    client.invoke(data.method, data.params, (err, res) => {
+      this.available.push(client);
+      process.nextTick(() => data.cb(err, res));
+      this._invokeNext();
+    });
   }
 }
