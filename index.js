@@ -97,6 +97,7 @@ module.exports.ClientPool = class ClientPool {
       client.close();
     });
     this.clients = [];
+    this.available = [];
   }
 
   client() {
@@ -105,8 +106,8 @@ module.exports.ClientPool = class ClientPool {
     return client;
   }
 
-  invoke(methos, params, cb) {
-    this.invocations.push({method: metnod, params: params, cb: cb});
+  invoke(method, params, cb) {
+    this.invocations.push({method: method, params: params, cb: cb});
     this._invokeNext();
   }
 
