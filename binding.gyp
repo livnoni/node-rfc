@@ -1,6 +1,6 @@
 {
   "variables": {
-	"linux_nwrfcsdk_path": "$(SAPNWRFC_HOME)",
+	"linux_nwrfcsdk_path": "<!(cd .. && npm prefix)/nwrfc",
     "msvs_nwrfcsdk_path": "<!(echo %SAPNWRFC_HOME%)",
     #"target_name": 'rfc-<!(node -v)'
     "target_name": 'rfc',
